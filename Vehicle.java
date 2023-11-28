@@ -1,14 +1,20 @@
 import java.awt.*;
+import java.util.List;
 
 public class Vehicle {
 
 
+
+    private List<Point> place_to_visit;
+
+    private List<Point> places_visited;
     private VehicleStates vehicleState;
     private Point position;
 
-    public Vehicle(VehicleStates vehicleState, Point position) {
+    public Vehicle(VehicleStates vehicleState, Point position, List<Point> place_to_visit) {
         this.vehicleState = vehicleState;
         this.position = position;
+        this.place_to_visit= place_to_visit;
     }
 
     public Point getPosition() {
@@ -24,6 +30,14 @@ public class Vehicle {
 //        setPosition(point);
         this.position = position;
         new_iteration();
+    }
+
+    public List<Point> getPlace_to_visit() {
+        return place_to_visit;
+    }
+
+    public void setPlace_to_visit(List<Point> place_to_visit) {
+        this.place_to_visit = place_to_visit;
     }
 
     public void interact(Vehicle other) {
