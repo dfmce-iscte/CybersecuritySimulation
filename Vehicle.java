@@ -31,7 +31,7 @@ public class Vehicle {
 
             if (isNewPositionClear(vehicles, newPosition)) {
                 this.position = newPosition;
-                if (attractorToVisit.equals(this.position)) {
+                if (attractorToVisit!=null && attractorToVisit.equals(this.position)) {
                     attractorToVisit = Main.getNewAttractor(attractorToVisit);
                 }
             }
@@ -126,6 +126,7 @@ public class Vehicle {
     }
 
     private void setVehicleState(VehicleStates vehicleState) {
+        System.out.println("From " + this.vehicleState + " to " + vehicleState);
         this.vehicleState = vehicleState;
     }
 

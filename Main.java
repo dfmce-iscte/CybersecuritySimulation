@@ -3,24 +3,49 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static java.lang.Thread.sleep;
+
 public class Main {
 
     private static List<Vehicle> vehicles;
     private static List<Point> centralAtractors;
     private static Random rand;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         initializeEnvironment();
 //        initializeEnvironmentCentralAttractors();
-        System.out.println(vehicles);
+        countVehiclesTypes();
 
-        while (true) {
+        Gui gui = new Gui(vehicles);
+        sleep(2000);
+        //gui.setCentralAttractors(centralAtractors);
+        for (int i = 0; i < 1000; i++) {
             for (Vehicle v : vehicles)
                 v.move(vehicles);
             for (Vehicle v : vehicles)
                 v.interact(vehicles);
+            gui.updateGui(vehicles);
+            countVehiclesTypes();
+            sleep(5000);
         }
-        
+        System.out.println(vehicles);
+    }
+
+    public static void countVehiclesTypes(){
+        int countInfected = 0;
+        int countNonInfected = 0;
+        int countRepaired = 0;
+        int countBrokenDown = 0;
+        for(Vehicle v:vehicles){
+            if(v.getVehicleState()==VehicleStates.INFECTED) countInfected++;
+            else if (v.getVehicleState()==VehicleStates.NON_INFECTED) countNonInfected++;
+            else if (v.getVehicleState()==VehicleStates.REPAIRED) countRepaired++;
+            else countBrokenDown++;
+        }
+        System.out.println("#INFECTED: " + countInfected);
+        System.out.println("#NON-INFECTED: " + countNonInfected);
+        System.out.println("#REPAIRED: " + countRepaired);
+        System.out.println("#BROKEN DOWN: " + countBrokenDown + "\n");
     }
 
     public static Point getNewAttractor(Point currentAttractor) {
