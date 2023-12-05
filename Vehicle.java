@@ -5,6 +5,7 @@ public class Vehicle {
     private Point attractorToVisit;
     private VehicleStates vehicleState;
     private Point position;
+    private Direction directionTaken;
 
     public Vehicle(VehicleStates vehicleState, Point position) {
         this.vehicleState = vehicleState;
@@ -129,7 +130,13 @@ public class Vehicle {
         System.out.println("From " + this.vehicleState + " to " + vehicleState);
         this.vehicleState = vehicleState;
     }
+    public Direction getDirectionTaken() {
+        return directionTaken;
+    }
 
+    public void setDirectionTaken(Direction directionTaken) {
+        this.directionTaken = directionTaken;
+    }
     @Override
     public String toString() {
         return "Vehicle{" +

@@ -18,7 +18,7 @@ public class Gui extends JFrame {
         setAllWhite();
         for (Vehicle v : vehicles) {
             Point p = v.getPosition();
-            ImageIcon icon = new ImageIcon("C:\\Users\\ASUS\\Downloads\\faisca.jpg");
+            ImageIcon icon = new ImageIcon(getImage(v));
             Image image = icon.getImage();
             Image newimg = image.getScaledInstance(50, 50, java.awt.Image.SCALE_REPLICATE);
             icon = new ImageIcon(newimg);
@@ -28,22 +28,70 @@ public class Gui extends JFrame {
         repaint();
     }
 
-    private Color getColor(Vehicle v){
-        if(v.getVehicleState()==VehicleStates.BROKEN_DOWN)
+    public String getImage(Vehicle v) {
+        if (v.getVehicleState() == VehicleStates.BROKEN_DOWN) {
+            if (Direction.UP == v.getDirectionTaken()) {
+                return "Images/BrokenDOWN.png";
+            } else if (Direction.DOWN == v.getDirectionTaken()) {
+                return "Images/BrokenUP.png";
+            } else if (Direction.LEFT == v.getDirectionTaken()) {
+                return "Images/BrokenLEFT.png";
+            } else if (Direction.RIGHT == v.getDirectionTaken()) {
+                return "Images/BrokenRIGHT.png";
+            }
+        }
+        if (v.getVehicleState() == VehicleStates.INFECTED) {
+            if (Direction.UP == v.getDirectionTaken()) {
+                return "Images/InfectedDOWN.png";
+            } else if (Direction.DOWN == v.getDirectionTaken()) {
+                return "Images/InfectedUP.png";
+            } else if (Direction.LEFT == v.getDirectionTaken()) {
+                return "Images/InfectedLEFT.png";
+            } else if (Direction.RIGHT == v.getDirectionTaken()) {
+                return "Images/InfectedRIGHT.png";
+            }
+        }
+        if (v.getVehicleState() == VehicleStates.NON_INFECTED) {
+            if (Direction.UP == v.getDirectionTaken()) {
+                return "Images/NonInfectedDOWN.png";
+            } else if (Direction.DOWN == v.getDirectionTaken()) {
+                return "Images/NonInfectedUP.png";
+            } else if (Direction.LEFT == v.getDirectionTaken()) {
+                return "Images/NonInfectedLEFT.png";
+            } else if (Direction.RIGHT == v.getDirectionTaken()) {
+                return "Images/NonInfectedRIGHT.png";
+            }
+        }
+        if (v.getVehicleState() == VehicleStates.REPAIRED) {
+            if (Direction.UP == v.getDirectionTaken()) {
+                return "Images/RepairedDOWN.png";
+            } else if (Direction.DOWN == v.getDirectionTaken()) {
+                return "Images/RepairedUP.png";
+            } else if (Direction.LEFT == v.getDirectionTaken()) {
+                return "Images/RepairedLEFT.png";
+            } else if (Direction.RIGHT == v.getDirectionTaken()) {
+                return "Images/RepairedRIGHT.png";
+            }
+        }
+        throw new IllegalArgumentException("Invalid vehicle state");
+    }
+
+    private Color getColor(Vehicle v) {
+        if (v.getVehicleState() == VehicleStates.BROKEN_DOWN)
             return Color.RED;
-        else if(v.getVehicleState()==VehicleStates.INFECTED)
+        else if (v.getVehicleState() == VehicleStates.INFECTED)
             return Color.GREEN;
-        else if(v.getVehicleState()==VehicleStates.NON_INFECTED)
+        else if (v.getVehicleState() == VehicleStates.NON_INFECTED)
             return Color.BLUE;
-        else if(v.getVehicleState()==VehicleStates.REPAIRED)
+        else if (v.getVehicleState() == VehicleStates.REPAIRED)
             return Color.YELLOW;
         else
             return Color.WHITE;
     }
 
-    private void setAllWhite(){
-        for(int i=0;i<10;i++){
-            for(int j=0;j<10;j++){
+    private void setAllWhite() {
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
                 gridButtons[i][j].setIcon(null);
                 gridButtons[i][j].setBackground(Color.WHITE);
             }
@@ -56,7 +104,7 @@ public class Gui extends JFrame {
         }
     }
 
-    private void setThings(){
+    private void setThings() {
         setTitle("Grid GUI");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -77,12 +125,12 @@ public class Gui extends JFrame {
     }
 
     public static void main(String[] args) {
-        Vehicle v1 = new Vehicle(VehicleStates.BROKEN_DOWN, new Point(0,0));
-        Vehicle v2 = new Vehicle(VehicleStates.INFECTED, new Point(0,1));
-        Vehicle v3 = new Vehicle(VehicleStates.NON_INFECTED, new Point(0,2));
-        Vehicle v4 = new Vehicle(VehicleStates.REPAIRED, new Point(0,3));
-        List<Vehicle> vehicles = List.of(v1,v2,v3,v4);
-        Gui a= new Gui(vehicles);
+        Vehicle v1 = new Vehicle(VehicleStates.BROKEN_DOWN, new Point(0, 0));
+        Vehicle v2 = new Vehicle(VehicleStates.INFECTED, new Point(0, 1));
+        Vehicle v3 = new Vehicle(VehicleStates.NON_INFECTED, new Point(0, 2));
+        Vehicle v4 = new Vehicle(VehicleStates.REPAIRED, new Point(0, 3));
+        List<Vehicle> vehicles = List.of(v1, v2, v3, v4);
+        Gui a = new Gui(vehicles);
         a.updateGui(vehicles);
 
     }
