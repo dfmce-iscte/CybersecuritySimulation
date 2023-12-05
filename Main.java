@@ -1,3 +1,7 @@
+import Enums.Probabilities;
+import Enums.Variables;
+import Enums.VehicleStates;
+
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +41,7 @@ public class Main {
         int countRepaired = 0;
         int countBrokenDown = 0;
         for(Vehicle v:vehicles){
-            if(v.getVehicleState()==VehicleStates.INFECTED) countInfected++;
+            if(v.getVehicleState()== VehicleStates.INFECTED) countInfected++;
             else if (v.getVehicleState()==VehicleStates.NON_INFECTED) countNonInfected++;
             else if (v.getVehicleState()==VehicleStates.REPAIRED) countRepaired++;
             else countBrokenDown++;

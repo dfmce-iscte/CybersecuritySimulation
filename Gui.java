@@ -1,8 +1,9 @@
+import Enums.Direction;
+import Enums.Variables;
+import Enums.VehicleStates;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Arrays;
 import java.util.List;
 
 public class Gui extends JFrame {
@@ -36,58 +37,54 @@ public class Gui extends JFrame {
                 return "Images/BrokenUP.png";
             } else if (Direction.LEFT == v.getDirectionTaken()) {
                 return "Images/BrokenLEFT.png";
-            } else if (Direction.RIGHT == v.getDirectionTaken()) {
+            } else {
                 return "Images/BrokenRIGHT.png";
             }
-        }
-        if (v.getVehicleState() == VehicleStates.INFECTED) {
+        } else if (v.getVehicleState() == VehicleStates.INFECTED) {
             if (Direction.UP == v.getDirectionTaken()) {
                 return "Images/InfectedDOWN.png";
             } else if (Direction.DOWN == v.getDirectionTaken()) {
                 return "Images/InfectedUP.png";
             } else if (Direction.LEFT == v.getDirectionTaken()) {
                 return "Images/InfectedLEFT.png";
-            } else if (Direction.RIGHT == v.getDirectionTaken()) {
+            } else {
                 return "Images/InfectedRIGHT.png";
             }
-        }
-        if (v.getVehicleState() == VehicleStates.NON_INFECTED) {
+        } else if (v.getVehicleState() == VehicleStates.NON_INFECTED) {
             if (Direction.UP == v.getDirectionTaken()) {
                 return "Images/NonInfectedDOWN.png";
             } else if (Direction.DOWN == v.getDirectionTaken()) {
                 return "Images/NonInfectedUP.png";
             } else if (Direction.LEFT == v.getDirectionTaken()) {
                 return "Images/NonInfectedLEFT.png";
-            } else if (Direction.RIGHT == v.getDirectionTaken()) {
+            } else {
                 return "Images/NonInfectedRIGHT.png";
             }
-        }
-        if (v.getVehicleState() == VehicleStates.REPAIRED) {
+        } else {
             if (Direction.UP == v.getDirectionTaken()) {
                 return "Images/RepairedDOWN.png";
             } else if (Direction.DOWN == v.getDirectionTaken()) {
                 return "Images/RepairedUP.png";
             } else if (Direction.LEFT == v.getDirectionTaken()) {
                 return "Images/RepairedLEFT.png";
-            } else if (Direction.RIGHT == v.getDirectionTaken()) {
+            } else {
                 return "Images/RepairedRIGHT.png";
             }
         }
-        throw new IllegalArgumentException("Invalid vehicle state");
     }
 
-    private Color getColor(Vehicle v) {
-        if (v.getVehicleState() == VehicleStates.BROKEN_DOWN)
-            return Color.RED;
-        else if (v.getVehicleState() == VehicleStates.INFECTED)
-            return Color.GREEN;
-        else if (v.getVehicleState() == VehicleStates.NON_INFECTED)
-            return Color.BLUE;
-        else if (v.getVehicleState() == VehicleStates.REPAIRED)
-            return Color.YELLOW;
-        else
-            return Color.WHITE;
-    }
+//    private Color getColor(Vehicle v) {
+//        if (v.getVehicleState() == VehicleStates.BROKEN_DOWN)
+//            return Color.RED;
+//        else if (v.getVehicleState() == VehicleStates.INFECTED)
+//            return Color.GREEN;
+//        else if (v.getVehicleState() == VehicleStates.NON_INFECTED)
+//            return Color.BLUE;
+//        else if (v.getVehicleState() == VehicleStates.REPAIRED)
+//            return Color.YELLOW;
+//        else
+//            return Color.WHITE;
+//    }
 
     private void setAllWhite() {
         for (int i = 0; i < 10; i++) {

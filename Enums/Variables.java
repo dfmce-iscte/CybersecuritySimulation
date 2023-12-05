@@ -1,3 +1,5 @@
+package Enums;
+
 public enum Variables {
 
     N_COLS(10),

@@ -1,3 +1,5 @@
+package Enums;
+
 public enum VehicleStates {
     NON_INFECTED,
     INFECTED,

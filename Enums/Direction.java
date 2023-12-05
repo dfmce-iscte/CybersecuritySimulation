@@ -1,3 +1,5 @@
+package Enums;
+
 import java.util.Random;
 
 public enum Direction {
@@ -14,13 +16,13 @@ public enum Direction {
         this.y_direction = deltaY;
     }
 
-//    public int getX_direction() {
-//        return x_direction;
-//    }
-//
-//    public int getY_direction() {
-//        return y_direction;
-//    }
+    public int getX_direction() {
+        return x_direction;
+    }
+
+    public int getY_direction() {
+        return y_direction;
+    }
 
     public static Direction randomDirection() {
         Random random = new Random();

@@ -1,3 +1,5 @@
+package Enums;
+
 public enum Probabilities {
 
     TO_INFECTED(0.5),

@@ -1,3 +1,8 @@
+import Enums.Direction;
+import Enums.Probabilities;
+import Enums.Variables;
+import Enums.VehicleStates;
+
 import java.awt.*;
 import java.util.List;
 
@@ -27,11 +32,12 @@ public class Vehicle {
         if (this.vehicleState != VehicleStates.BROKEN_DOWN) {
             Direction random_dir = getRandomDirection();
             Point newPosition = checkNewPosition(new Point(
-                    position.x + random_dir.x_direction,
-                    position.y + random_dir.y_direction));
+                    position.x + random_dir.getX_direction(),
+                    position.y + random_dir.getY_direction()));
 
             if (isNewPositionClear(vehicles, newPosition)) {
                 this.position = newPosition;
+                this.directionTaken = random_dir;
                 if (attractorToVisit!=null && attractorToVisit.equals(this.position)) {
                     attractorToVisit = Main.getNewAttractor(attractorToVisit);
                 }
@@ -50,6 +56,14 @@ public class Vehicle {
             }
         }
         updateStatusIfVehicleInfected();
+    }
+
+    public VehicleStates getVehicleState() {
+        return vehicleState;
+    }
+
+    public Direction getDirectionTaken() {
+        return directionTaken;
     }
 
     private Direction getRandomDirection() {
@@ -122,21 +136,11 @@ public class Vehicle {
         setVehicleState(VehicleStates.BROKEN_DOWN);
     }
 
-    public VehicleStates getVehicleState() {
-        return vehicleState;
-    }
-
     private void setVehicleState(VehicleStates vehicleState) {
         System.out.println("From " + this.vehicleState + " to " + vehicleState);
         this.vehicleState = vehicleState;
     }
-    public Direction getDirectionTaken() {
-        return directionTaken;
-    }
 
-    public void setDirectionTaken(Direction directionTaken) {
-        this.directionTaken = directionTaken;
-    }
     @Override
     public String toString() {
         return "Vehicle{" +
