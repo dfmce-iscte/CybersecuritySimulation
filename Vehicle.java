@@ -2,55 +2,99 @@ import java.awt.*;
 import java.util.List;
 
 public class Vehicle {
-
-
-
-    private List<Point> place_to_visit;
-
-    private List<Point> places_visited;
+    private Point attractorToVisit;
     private VehicleStates vehicleState;
     private Point position;
 
-    public Vehicle(VehicleStates vehicleState, Point position, List<Point> place_to_visit) {
+    public Vehicle(VehicleStates vehicleState, Point position) {
         this.vehicleState = vehicleState;
         this.position = position;
-        this.place_to_visit= place_to_visit;
+        this.attractorToVisit = null;
+    }
+
+    public Vehicle(VehicleStates vehicleState, Point position, Point attractorToVisit) {
+        this.vehicleState = vehicleState;
+        this.position = position;
+        this.attractorToVisit = attractorToVisit;
     }
 
     public Point getPosition() {
         return position;
     }
 
-//    public void setPosition(Point position) {
-//        this.position = position;
-//    }
+    public void move(List<Vehicle> vehicles) {
+        if (this.vehicleState != VehicleStates.BROKEN_DOWN) {
+            Direction random_dir = getRandomDirection();
+            Point newPosition = checkNewPosition(new Point(
+                    position.x + random_dir.x_direction,
+                    position.y + random_dir.y_direction));
 
-
-    public void move(Point position) {
-//        setPosition(point);
-        this.position = position;
-        new_iteration();
-    }
-
-    public List<Point> getPlace_to_visit() {
-        return place_to_visit;
-    }
-
-    public void setPlace_to_visit(List<Point> place_to_visit) {
-        this.place_to_visit = place_to_visit;
-    }
-
-    public void interact(Vehicle other) {
-        // Define interaction logic based on infection probabilities.
-        if (other.getVehicleState() == VehicleStates.INFECTED && this.vehicleState == VehicleStates.NON_INFECTED) {
-            double random = Math.random();
-            if (random < Probabilities.NON_INFECTED__TO_INFECTED.getProb()) {
-                infected();
+            if (isNewPositionClear(vehicles, newPosition)) {
+                this.position = newPosition;
+                if (attractorToVisit.equals(this.position)) {
+                    attractorToVisit = Main.getNewAttractor(attractorToVisit);
+                }
             }
         }
     }
 
-    public void new_iteration() {
+    public void interact(List<Vehicle> vehicles) {
+        for (Vehicle other : vehicles) {
+            if (isVehicleNeighboor(other) && other.getVehicleState() == VehicleStates.INFECTED &&
+                    (this.vehicleState == VehicleStates.NON_INFECTED || this.vehicleState == VehicleStates.REPAIRED)) {
+                double random = Math.random();
+                if (random < Probabilities.TO_INFECTED.getProb()) {
+                    infect();
+                }
+            }
+        }
+        updateStatusIfVehicleInfected();
+    }
+
+    private Direction getRandomDirection() {
+        if (attractorToVisit == null)
+            return Direction.randomDirection();
+        else
+            return Direction.randomDirectionWithPreferencialDirection(bestDirectionToTake());
+    }
+
+    private Direction bestDirectionToTake() {
+        if (attractorToVisit.x > position.x)
+            return Direction.RIGHT;
+        else if (attractorToVisit.x < position.x)
+            return Direction.LEFT;
+        else if (attractorToVisit.y > position.y)
+            return Direction.DOWN;
+        else
+            return Direction.UP;
+    }
+
+    private boolean isNewPositionClear(List<Vehicle> vehicles, Point newPosition) {
+        for (Vehicle v : vehicles) {
+            if (v.getPosition().equals(newPosition)) return false;
+        }
+        return true;
+    }
+
+    private Point checkNewPosition(Point newPosition) {
+        if (newPosition.x == -1)
+            newPosition.x = Variables.N_COLS.getValue() - 1;
+        else if (newPosition.x == Variables.N_COLS.getValue())
+            newPosition.x = 0;
+
+        if (newPosition.y == -1)
+            newPosition.y = Variables.N_ROWS.getValue() - 1;
+        else if (newPosition.y == Variables.N_ROWS.getValue())
+            newPosition.y = 0;
+
+        return newPosition;
+    }
+
+    private boolean isVehicleNeighboor(Vehicle vehicle) {
+        return calculateManhattanDistance(this.position, vehicle.getPosition()) == 1;
+    }
+
+    private void updateStatusIfVehicleInfected() {
         if (vehicleState == VehicleStates.INFECTED) {
             double random = Math.random();
             if (random < Probabilities.INFECTED__TO_REPAIRED.getProb()) {
@@ -61,15 +105,19 @@ public class Vehicle {
         }
     }
 
-    public void infected() {
+    private int calculateManhattanDistance(Point a, Point b) {
+        return Math.abs(a.x - a.y) + Math.abs(a.y - b.y);
+    }
+
+    private void infect() {
         setVehicleState(VehicleStates.INFECTED);
     }
 
-    public void repair() {
+    private void repair() {
         setVehicleState(VehicleStates.REPAIRED);
     }
 
-    public void breakDown() {
+    private void breakDown() {
         setVehicleState(VehicleStates.BROKEN_DOWN);
     }
 
@@ -77,7 +125,7 @@ public class Vehicle {
         return vehicleState;
     }
 
-    public void setVehicleState(VehicleStates vehicleState) {
+    private void setVehicleState(VehicleStates vehicleState) {
         this.vehicleState = vehicleState;
     }
 

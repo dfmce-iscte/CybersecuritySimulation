@@ -22,8 +22,21 @@ public enum Direction {
 //        return y_direction;
 //    }
 
-    public static Direction random_Direction(){
-        Random random= new Random();
+    public static Direction randomDirection() {
+        Random random = new Random();
         return Direction.values()[random.nextInt(Direction.values().length)];
+    }
+
+    public static Direction randomDirectionWithPreferencialDirection(Direction direction) {
+        double random = new Random().nextDouble();
+
+        if (random < Probabilities.CHOOSE_BEST_DIRECTION.getProb())
+            return direction;
+
+        Direction dir = Direction.randomDirection();
+        while (dir == direction) {
+            dir = Direction.randomDirection();
+        }
+        return dir;
     }
 }
