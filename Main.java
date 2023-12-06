@@ -16,13 +16,12 @@ public class Main {
     private static Random rand;
 
     public static void main(String[] args) throws InterruptedException {
-        initializeEnvironment();
-//        initializeEnvironmentCentralAttractors();
+        //initializeEnvironment();
+        initializeEnvironmentCentralAttractors();
 //        countVehiclesTypes();
 
-        Gui gui = new Gui(vehicles);
-        sleep(5000);
-        //gui.setCentralAttractors(centralAtractors);
+        Gui gui = new Gui(vehicles,centralAtractors);
+        //sleep(5000);
         for (int i = 0; i < 1000; i++) {
             for (Vehicle v : vehicles)
                 v.move(vehicles);
@@ -32,7 +31,7 @@ public class Main {
             gui.updateGui(vehicles);
             System.out.println();
 //            countVehiclesTypes();
-            sleep(5000);
+           // sleep(5000);
         }
         System.out.println(vehicles);
     }
@@ -101,7 +100,7 @@ public class Main {
         }
     }
 
-    private static void createVehicles(boolean vehiclesWithAttractors) {
+    private static void  createVehicles(boolean vehiclesWithAttractors) {
         for (int i = 0; i < Variables.N_VEHICLES.getValue(); i++) {
             double random = rand.nextDouble();
             Point newPosition = generateRandomPosition();

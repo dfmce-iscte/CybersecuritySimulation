@@ -137,7 +137,8 @@ public class Vehicle {
     }
 
     private void setVehicleState(VehicleStates vehicleState) {
-        System.out.println("From " + this.vehicleState + " to " + vehicleState);
+        Gui.addStateChange(this.vehicleState, vehicleState);
+//        System.out.println("From " + this.vehicleState + " to " + vehicleState);
         this.vehicleState = vehicleState;
     }
 

@@ -6,15 +6,28 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+import static java.lang.Thread.sleep;
+
 public class Gui extends JFrame {
 
-    private final JPanel window = new JPanel(new GridLayout(1,2));
+    private final JPanel window = new JPanel(new GridLayout(1, 2));
     private final JLabel label = new JLabel();
     private final JPanel gridPanel = new JPanel(new GridLayout(Variables.N_ROWS.getValue(), Variables.N_COLS.getValue()));
     private final JButton[][] gridButtons = new JButton[Variables.N_COLS.getValue()][Variables.N_ROWS.getValue()];
+    private static String statesChanges = "";
+
+    private List<Point> centralAttractors;
+
+    private boolean stop = true;
 
     public Gui(List<Vehicle> vehicles) {
         setThings();
+        updateGui(vehicles);
+    }
+
+    public Gui(List<Vehicle> vehicles, List<Point> centralAttractors) {
+        setThings();
+        this.centralAttractors = centralAttractors;
         updateGui(vehicles);
     }
 
@@ -30,7 +43,16 @@ public class Gui extends JFrame {
             //gridButtons[p.x][p.y].setBackground(getColor(v));
         }
         countVehiclesTypes(vehicles);
+        setCentralAttractors(centralAttractors);
         repaint();
+        while (stop) {
+            try {
+                sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        stop = true;
     }
 
     public String getImage(Vehicle v) {
@@ -56,25 +78,29 @@ public class Gui extends JFrame {
             }
         } else if (v.getVehicleState() == VehicleStates.NON_INFECTED) {
             if (Direction.UP == v.getDirectionTaken()) {
-                return "Images/NonInfectedUP.jpg";
+                return "Images/NonInfectedUP.jpeg";
             } else if (Direction.DOWN == v.getDirectionTaken()) {
-                return "Images/NonInfectedDOWN.jpg";
+                return "Images/NonInfectedDOWN.png";
             } else if (Direction.LEFT == v.getDirectionTaken()) {
-                return "Images/NonInfectedLEFT.jpg";
+                return "Images/NonInfectedLEFT.png";
             } else {
-                return "Images/NonInfectedRIGHT.jpg";
+                return "Images/NonInfectedRIGHT.png";
             }
         } else {
             if (Direction.UP == v.getDirectionTaken()) {
-                return "Images/RepairedUP.jpg";
+                return "Images/RepairedUP.png";
             } else if (Direction.DOWN == v.getDirectionTaken()) {
-                return "Images/RepairedDOWN.jpg";
+                return "Images/RepairedDOWN.png";
             } else if (Direction.LEFT == v.getDirectionTaken()) {
-                return "Images/RepairedLEFT.jpg";
+                return "Images/RepairedLEFT.png";
             } else {
-                return "Images/RepairedRIGHT.jpg";
+                return "Images/RepairedRIGHT.png";
             }
         }
+    }
+
+    public static void addStateChange(VehicleStates from, VehicleStates to) {
+        statesChanges += "From: " + from + " To: " + to + "<br>";
     }
 
     private void setLabelInfo(int nInfected, int nNonInfected, int nRepaired, int nBrokenDown) {
@@ -86,19 +112,21 @@ public class Gui extends JFrame {
             label.setText("<html>" + newInfo);
         else
             label.setText("<html><br>From:<br>#Infected" +
-                    previousInfo[previousInfo.length - 1].replace("</html>","") +
+                    previousInfo[previousInfo.length - 1].replace("</html>", "") +
+                    "<br>" + statesChanges +
                     "<br>To:" + newInfo);
+        statesChanges = "";
     }
 
-    private void countVehiclesTypes(List<Vehicle> vehicles){
+    private void countVehiclesTypes(List<Vehicle> vehicles) {
         int countInfected = 0;
         int countNonInfected = 0;
         int countRepaired = 0;
         int countBrokenDown = 0;
-        for(Vehicle v:vehicles){
-            if(v.getVehicleState()== VehicleStates.INFECTED) countInfected++;
-            else if (v.getVehicleState()==VehicleStates.NON_INFECTED) countNonInfected++;
-            else if (v.getVehicleState()==VehicleStates.REPAIRED) countRepaired++;
+        for (Vehicle v : vehicles) {
+            if (v.getVehicleState() == VehicleStates.INFECTED) countInfected++;
+            else if (v.getVehicleState() == VehicleStates.NON_INFECTED) countNonInfected++;
+            else if (v.getVehicleState() == VehicleStates.REPAIRED) countRepaired++;
             else countBrokenDown++;
         }
         setLabelInfo(countInfected, countNonInfected, countRepaired, countBrokenDown);
@@ -118,18 +146,19 @@ public class Gui extends JFrame {
 //    }
 
     private void setAllWhite() {
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
+        for (int i = 0; i < Variables.N_ROWS.getValue(); i++) {
+            for (int j = 0; j < Variables.N_COLS.getValue(); j++) {
                 gridButtons[i][j].setIcon(null);
                 gridButtons[i][j].setBackground(Color.WHITE);
             }
         }
     }
 
-    private void setCentralAttractors(List<Point> points) {
+    public void setCentralAttractors(List<Point> points) {
         for (Point p : points) {
             gridButtons[p.x][p.y].setBackground(Color.BLACK);
         }
+        repaint();
     }
 
     private void setThings() {
@@ -137,8 +166,8 @@ public class Gui extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
+        for (int i = 0; i < Variables.N_ROWS.getValue(); i++) {
+            for (int j = 0; j < Variables.N_COLS.getValue(); j++) {
                 gridButtons[i][j] = new JButton();
                 gridButtons[i][j].setBackground(Color.WHITE);
                 gridButtons[i][j].setPreferredSize(new Dimension(50, 50)); // Set preferred size
@@ -146,7 +175,7 @@ public class Gui extends JFrame {
             }
         }
         label.setHorizontalAlignment(SwingConstants.CENTER);
-        label.setFont(new Font("Arial", Font.PLAIN, 24));
+        label.setFont(new Font("Arial", Font.PLAIN, 20));
         window.add(label);
         window.add(gridPanel);
         add(window, BorderLayout.CENTER);
@@ -154,6 +183,12 @@ public class Gui extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+        label.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                //System.out.println("Clicked");
+                stop = false;
+            }
+        });
     }
 
 //    public static void main(String[] args) {
