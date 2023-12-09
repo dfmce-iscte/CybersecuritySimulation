@@ -108,7 +108,7 @@ public class Vehicle extends Thread {
 
     private boolean isNewPositionClear(List<Vehicle> vehicles, Point newPosition) {
         if (attractorToVisit != null)
-            for (Point attractor : Main.getCentralAtractors()) {
+            for (Point attractor : Main.getCentralAttractors()) {
                 if (newPosition.equals(attractor)) return false;
             }
         for (Vehicle v : vehicles) {

@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Main {
 
     private static List<Vehicle> vehicles;
-    private static List<Point> centralAtractors;
+    private static List<Point> centralAttractors;
     private static Random rand;
     public static Gui gui;
     public static Lock lock;
@@ -29,9 +29,9 @@ public class Main {
     }
 
     public static Point getNewAttractor(Point currentAttractor) {
-        Point newAttractor = centralAtractors.get(rand.nextInt(centralAtractors.size()));
+        Point newAttractor = centralAttractors.get(rand.nextInt(centralAttractors.size()));
         while (newAttractor.equals(currentAttractor)) {
-            newAttractor = centralAtractors.get(rand.nextInt(centralAtractors.size()));
+            newAttractor = centralAttractors.get(rand.nextInt(centralAttractors.size()));
         }
         return newAttractor;
     }
@@ -40,8 +40,8 @@ public class Main {
         return vehicles;
     }
 
-    public static List<Point> getCentralAtractors() {
-        return centralAtractors;
+    public static List<Point> getCentralAttractors() {
+        return centralAttractors;
     }
 
     private static void initializeEnvironment() {
@@ -54,7 +54,7 @@ public class Main {
     private static void initializeEnvironmentCentralAttractors() {
         vehicles = new ArrayList<>();
         rand = new Random();
-        centralAtractors = new ArrayList<>();
+        centralAttractors = new ArrayList<>();
 
         createCentralAttractors();
         createVehicles(true);
@@ -79,7 +79,7 @@ public class Main {
     private static void createCentralAttractors() {
         for (int i = 0; i < Variables.N_ATTRACTORS.getValue(); i++) {
             Point new_position = generateRandomPosition();
-            centralAtractors.add(new_position);
+            centralAttractors.add(new_position);
         }
     }
 
@@ -89,7 +89,7 @@ public class Main {
             Point newPosition = generateRandomPosition();
 
             if (vehiclesWithAttractors) {
-                Point randomAttractor = centralAtractors.get(rand.nextInt(centralAtractors.size()));
+                Point randomAttractor = centralAttractors.get(rand.nextInt(centralAttractors.size()));
                 if (random < Probabilities.START_INFECTED.getProb())
                     vehicles.add(new Vehicle(VehicleStates.INFECTED, newPosition, randomAttractor));
                 else
