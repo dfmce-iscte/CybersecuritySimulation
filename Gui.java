@@ -4,54 +4,66 @@ import Enums.VehicleStates;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static java.lang.Thread.sleep;
 
 public class Gui extends JFrame {
 
     private final JPanel window = new JPanel(new GridLayout(1, 2));
-    private final JLabel label = new JLabel();
+    private static final JLabel label = new JLabel();
     private final JPanel gridPanel = new JPanel(new GridLayout(Variables.N_ROWS.getValue(), Variables.N_COLS.getValue()));
-    private final JButton[][] gridButtons = new JButton[Variables.N_COLS.getValue()][Variables.N_ROWS.getValue()];
+    private final JButton[][] gridButtons = new JButton[Variables.N_ROWS.getValue()][Variables.N_COLS.getValue()];
+    private static int nonInfectedToInfected = 0;
+    private static int infectedToRepaired = 0;
+    private static int repairedToInfected = 0;
+    private static int infectedToBreakDown = 0;
+    private static int countInfected = 0;
+    private static int countNonInfected = 0;
+    private static int countRepaired = 0;
+    private static int countBrokenDown = 0;
 
-//    private Map<Point,Integer> vehiclesPositions = new HashMap<>();
-    private static String statesChanges = "";
 
     private List<Point> centralAttractors;
 
-//    private boolean stop = true;
 
     public Gui(List<Vehicle> vehicles) {
         setThings();
+        this.centralAttractors = null;
         updateGui(vehicles);
     }
 
     public Gui(List<Vehicle> vehicles, List<Point> centralAttractors) {
         setThings();
         this.centralAttractors = centralAttractors;
-        for (Vehicle v : vehicles)
-            updateGui(v);
+        updateGui(vehicles);
     }
 
-    public void updateGui(Vehicle vehicle, Point oldPosition) {
+    public void updateCar(Vehicle vehicle, Point oldPosition) {
+        ImageIcon icon = new ImageIcon(getImage(vehicle));
+        Image image = icon.getImage();
+        Image newImg = image.getScaledInstance(50, 50, java.awt.Image.SCALE_REPLICATE);
+        icon = new ImageIcon(newImg);
         gridButtons[oldPosition.y][oldPosition.x].setIcon(null);
+        gridButtons[vehicle.getPosition().y][vehicle.getPosition().x].setIcon(icon);
+        gridButtons[vehicle.getPosition().y][vehicle.getPosition().x].repaint();
+        gridButtons[oldPosition.y][oldPosition.x].repaint();
+        setLabelInfo();
+    }
+
+    public void updateGui(List<Vehicle> vehicles) {
         setAllWhite();
         for (Vehicle v : vehicles) {
             Point p = v.getPosition();
             ImageIcon icon = new ImageIcon(getImage(v));
             Image image = icon.getImage();
-            Image newimg = image.getScaledInstance(50, 50, java.awt.Image.SCALE_REPLICATE);
-            icon = new ImageIcon(newimg);
-            gridButtons[p.x][p.y].setIcon(icon);
+            Image newImg = image.getScaledInstance(50, 50, java.awt.Image.SCALE_REPLICATE);
+            icon = new ImageIcon(newImg);
+            gridButtons[p.y][p.x].setIcon(icon);
             //gridButtons[p.x][p.y].setBackground(getColor(v));
         }
         countVehiclesTypes(vehicles);
         setCentralAttractors(centralAttractors);
         repaint();
-        statesChanges = "";
     }
 
     public String getImage(Vehicle v) {
@@ -77,7 +89,7 @@ public class Gui extends JFrame {
             }
         } else if (v.getVehicleState() == VehicleStates.NON_INFECTED) {
             if (Direction.UP == v.getDirectionTaken()) {
-                return "Images/NonInfectedUP.jpeg";
+                return "Images/NonInfectedUP.png";
             } else if (Direction.DOWN == v.getDirectionTaken()) {
                 return "Images/NonInfectedDOWN.png";
             } else if (Direction.LEFT == v.getDirectionTaken()) {
@@ -99,50 +111,47 @@ public class Gui extends JFrame {
     }
 
     public static void addStateChange(VehicleStates from, VehicleStates to) {
-        statesChanges += "From: " + from + " To: " + to + "<br>";
+        if (from.equals(VehicleStates.NON_INFECTED)) {
+            nonInfectedToInfected++;
+            countNonInfected--;
+            countInfected++;
+        } else if (from.equals(VehicleStates.INFECTED) && to.equals(VehicleStates.REPAIRED)) {
+            infectedToRepaired++;
+            countInfected--;
+            countRepaired++;
+        } else if (from.equals(VehicleStates.REPAIRED) && to.equals(VehicleStates.INFECTED)) {
+            repairedToInfected++;
+            countRepaired--;
+            countInfected++;
+        } else if (from.equals(VehicleStates.INFECTED) && to.equals(VehicleStates.BROKEN_DOWN)) {
+            infectedToBreakDown++;
+            countInfected--;
+            countBrokenDown++;
+        }
     }
 
-    private void setLabelInfo(int nInfected, int nNonInfected, int nRepaired, int nBrokenDown) {
-        String[] previousInfo = label.getText().split("<br>#Infected");
-        String newInfo = "<br>#Infected: " + nInfected +
-                "<br>#Non Infected: " + nNonInfected + "<br>#Repaired: " + nRepaired +
-                "<br>#Broken Down: " + nBrokenDown + "<br></html>";
-        if (previousInfo.length == 1)
-            label.setText("<html>" + newInfo);
-        else
-            label.setText("<html><br>From:<br>#Infected" +
-                    previousInfo[previousInfo.length - 1].replace("</html>", "") +
-                    "<br>" + statesChanges +
-                    "<br>To:" + newInfo);
-//        statesChanges = "";
+    private static void setLabelInfo() {
+        String countInfo = "<br>#Infected: " + countInfected +
+                "<br>#Non Infected: " + countNonInfected + "<br>#Repaired: " + countRepaired +
+                "<br>#Broken Down: " + countBrokenDown;
+        String statesChangesInfo = "<br>#From Non Infected to Infected: " + nonInfectedToInfected +
+                "<br>#From Infected to Repaired: " + infectedToRepaired +
+                "<br>#From Infected to Broken Down: " + infectedToBreakDown +
+                "<br>#From Repaired to Infected: " + repairedToInfected;
+        label.setText("<html>" +
+                "<br>" + countInfo + "<br>" + statesChangesInfo);
+        label.repaint();
     }
 
-    private void countVehiclesTypes(List<Vehicle> vehicles) {
-        int countInfected = 0;
-        int countNonInfected = 0;
-        int countRepaired = 0;
-        int countBrokenDown = 0;
+    private static void countVehiclesTypes(List<Vehicle> vehicles) {
         for (Vehicle v : vehicles) {
             if (v.getVehicleState() == VehicleStates.INFECTED) countInfected++;
             else if (v.getVehicleState() == VehicleStates.NON_INFECTED) countNonInfected++;
             else if (v.getVehicleState() == VehicleStates.REPAIRED) countRepaired++;
             else countBrokenDown++;
         }
-        setLabelInfo(countInfected, countNonInfected, countRepaired, countBrokenDown);
+        setLabelInfo();
     }
-
-//    private Color getColor(Vehicle v) {
-//        if (v.getVehicleState() == VehicleStates.BROKEN_DOWN)
-//            return Color.RED;
-//        else if (v.getVehicleState() == VehicleStates.INFECTED)
-//            return Color.GREEN;
-//        else if (v.getVehicleState() == VehicleStates.NON_INFECTED)
-//            return Color.BLUE;
-//        else if (v.getVehicleState() == VehicleStates.REPAIRED)
-//            return Color.YELLOW;
-//        else
-//            return Color.WHITE;
-//    }
 
     private void setAllWhite() {
         for (int i = 0; i < Variables.N_ROWS.getValue(); i++) {
@@ -154,8 +163,9 @@ public class Gui extends JFrame {
     }
 
     public void setCentralAttractors(List<Point> points) {
+        if (points == null) return;
         for (Point p : points) {
-            gridButtons[p.x][p.y].setBackground(Color.BLACK);
+            gridButtons[p.y][p.x].setBackground(Color.BLACK);
         }
         repaint();
     }
@@ -178,25 +188,8 @@ public class Gui extends JFrame {
         window.add(label);
         window.add(gridPanel);
         add(window, BorderLayout.CENTER);
-//        add(gridPanel, BorderLayout.CENTER);
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
-//        label.addMouseListener(new java.awt.event.MouseAdapter() {
-//            public void mouseClicked(java.awt.event.MouseEvent evt) {
-//                //System.out.println("Clicked");
-//                stop = false;
-//            }
-//        });
     }
-
-//    public static void main(String[] args) {
-//        Vehicle v1 = new Vehicle(VehicleStates.BROKEN_DOWN, new Point(0, 0));
-//        Vehicle v2 = new Vehicle(VehicleStates.INFECTED, new Point(0, 1));
-//        Vehicle v3 = new Vehicle(VehicleStates.NON_INFECTED, new Point(0, 2));
-//        Vehicle v4 = new Vehicle(VehicleStates.REPAIRED, new Point(0, 3));
-//        List<Vehicle> vehicles = List.of(v1, v2, v3, v4);
-//        Gui a = new Gui(vehicles);
-//        a.updateGui(vehicles);
-//    }
 }

@@ -3,10 +3,10 @@ package Enums;
 import java.util.Random;
 
 public enum Direction {
-    UP(1, 0),
-    DOWN(-1, 0),
-    LEFT(0, -1),
-    RIGHT(0, 1);
+    UP(0, -1),
+    DOWN(0, 1),
+    LEFT(-1, 0),
+    RIGHT(1, 0);
 
     final int x_direction;
     final int y_direction;
@@ -32,8 +32,9 @@ public enum Direction {
     public static Direction randomDirectionWithPreferencialDirection(Direction direction) {
         double random = new Random().nextDouble();
 
-        if (random < Probabilities.CHOOSE_BEST_DIRECTION.getProb())
+        if (random < Probabilities.CHOOSE_BEST_DIRECTION.getProb()) {
             return direction;
+        }
 
         Direction dir = Direction.randomDirection();
         while (dir == direction) {

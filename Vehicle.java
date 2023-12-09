@@ -5,12 +5,9 @@ import Enums.VehicleStates;
 
 import java.awt.*;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-import static java.lang.Thread.sleep;
 
-public class Vehicle extends Thread{
+public class Vehicle extends Thread {
     private Point attractorToVisit;
     private VehicleStates vehicleState;
     private Point position;
@@ -40,9 +37,9 @@ public class Vehicle extends Thread{
             Point oldPosition = this.position;
             move(vehicles);
             interact(vehicles);
-            Main.gui.updateGui(vehicles);
+            Main.gui.updateCar(this, oldPosition);
             try {
-                sleep(3000);
+                sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -57,17 +54,15 @@ public class Vehicle extends Thread{
                     position.y + random_dir.getY_direction()));
 
             if (newPosition.equals(attractorToVisit)) {
-                System.out.println("Arrived to Atractor");
+               System.out.println("Arrived to Atractor: " + attractorToVisit);
                 attractorToVisit = Main.getNewAttractor(attractorToVisit);
                 return;
             }
             Main.lock.lock();
             if (isNewPositionClear(vehicles, newPosition)) {
-                System.out.println("CLEAR");
                 this.position = newPosition;
                 this.directionTaken = random_dir;
-            } else
-                System.out.println("NOT CLEAR: " + newPosition);
+            }
             Main.lock.unlock();
         }
     }
@@ -152,7 +147,7 @@ public class Vehicle extends Thread{
     }
 
     private int calculateManhattanDistance(Point a, Point b) {
-        return Math.abs(a.x - a.y) + Math.abs(a.y - b.y);
+        return Math.abs(b.x - a.x) + Math.abs(b.y - a.y);
     }
 
     private void infect() {
@@ -169,7 +164,7 @@ public class Vehicle extends Thread{
 
     private void setVehicleState(VehicleStates vehicleState) {
         Gui.addStateChange(this.vehicleState, vehicleState);
-//        System.out.println("From " + this.vehicleState + " to " + vehicleState);
+        System.out.println("From " + this.vehicleState + " to " + vehicleState + " in " + position);
         this.vehicleState = vehicleState;
     }
 

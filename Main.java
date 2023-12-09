@@ -9,8 +9,6 @@ import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static java.lang.Thread.sleep;
-
 public class Main {
 
     private static List<Vehicle> vehicles;
@@ -20,29 +18,14 @@ public class Main {
     public static Lock lock;
 
     public static void main(String[] args) throws InterruptedException {
-        lock= new ReentrantLock();
-        //initializeEnvironment();
-//        gui = new Gui(vehicles);
-        initializeEnvironmentCentralAttractors();
-        gui = new Gui(vehicles,centralAtractors);
-//        countVehiclesTypes();
+        lock = new ReentrantLock();
+        initializeEnvironment();
+        gui = new Gui(vehicles);
+//        initializeEnvironmentCentralAttractors();
+//        gui = new Gui(vehicles, centralAtractors);
         for (Vehicle v : vehicles) {
             v.start();
         }
-//        sleep(5000);
-        //gui.setCentralAttractors(centralAtractors);
-//        for (int i = 0; i < 1000; i++) {
-//            for (Vehicle v : vehicles)
-//                v.move(vehicles);
-//            //dar update ao gui. Assim da próxima vez que se atualizar a gui só mudar os VehiclesStates.
-//            for (Vehicle v : vehicles)
-//                v.interact(vehicles);
-//            gui.updateGui(vehicles);
-//            System.out.println();
-////            countVehiclesTypes();
-//            sleep(5000);
-//        }
-//        System.out.println(vehicles);
     }
 
     public static Point getNewAttractor(Point currentAttractor) {
@@ -100,7 +83,7 @@ public class Main {
         }
     }
 
-    private static void  createVehicles(boolean vehiclesWithAttractors) {
+    private static void createVehicles(boolean vehiclesWithAttractors) {
         for (int i = 0; i < Variables.N_VEHICLES.getValue(); i++) {
             double random = rand.nextDouble();
             Point newPosition = generateRandomPosition();
