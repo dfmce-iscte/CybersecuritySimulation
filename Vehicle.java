@@ -5,8 +5,12 @@ import Enums.VehicleStates;
 
 import java.awt.*;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class Vehicle {
+import static java.lang.Thread.sleep;
+
+public class Vehicle extends Thread{
     private Point attractorToVisit;
     private VehicleStates vehicleState;
     private Point position;
@@ -28,24 +32,47 @@ public class Vehicle {
         return position;
     }
 
-    public void move(List<Vehicle> vehicles) {
+
+    @Override
+    public void run() {
+        while (true) {
+            List<Vehicle> vehicles = Main.getAllVehicles();
+            Point oldPosition = this.position;
+            move(vehicles);
+            interact(vehicles);
+            Main.gui.updateGui(vehicles);
+            try {
+                sleep(3000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void move(List<Vehicle> vehicles) {
         if (this.vehicleState != VehicleStates.BROKEN_DOWN) {
             Direction random_dir = getRandomDirection();
             Point newPosition = checkNewPosition(new Point(
                     position.x + random_dir.getX_direction(),
                     position.y + random_dir.getY_direction()));
 
+            if (newPosition.equals(attractorToVisit)) {
+                System.out.println("Arrived to Atractor");
+                attractorToVisit = Main.getNewAttractor(attractorToVisit);
+                return;
+            }
+            Main.lock.lock();
             if (isNewPositionClear(vehicles, newPosition)) {
+                System.out.println("CLEAR");
                 this.position = newPosition;
                 this.directionTaken = random_dir;
-                if (attractorToVisit!=null && attractorToVisit.equals(this.position)) {
-                    attractorToVisit = Main.getNewAttractor(attractorToVisit);
-                }
-            }
+            } else
+                System.out.println("NOT CLEAR: " + newPosition);
+            Main.lock.unlock();
         }
     }
 
-    public void interact(List<Vehicle> vehicles) {
+    private void interact(List<Vehicle> vehicles) {
         for (Vehicle other : vehicles) {
             if (isVehicleNeighboor(other) && other.getVehicleState() == VehicleStates.INFECTED &&
                     (this.vehicleState == VehicleStates.NON_INFECTED || this.vehicleState == VehicleStates.REPAIRED)) {
@@ -85,6 +112,10 @@ public class Vehicle {
     }
 
     private boolean isNewPositionClear(List<Vehicle> vehicles, Point newPosition) {
+        if (attractorToVisit != null)
+            for (Point attractor : Main.getCentralAtractors()) {
+                if (newPosition.equals(attractor)) return false;
+            }
         for (Vehicle v : vehicles) {
             if (v.getPosition().equals(newPosition)) return false;
         }

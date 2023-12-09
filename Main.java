@@ -6,6 +6,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static java.lang.Thread.sleep;
 
@@ -14,44 +16,34 @@ public class Main {
     private static List<Vehicle> vehicles;
     private static List<Point> centralAtractors;
     private static Random rand;
+    public static Gui gui;
+    public static Lock lock;
 
     public static void main(String[] args) throws InterruptedException {
+        lock= new ReentrantLock();
         //initializeEnvironment();
+//        gui = new Gui(vehicles);
         initializeEnvironmentCentralAttractors();
+        gui = new Gui(vehicles,centralAtractors);
 //        countVehiclesTypes();
-
-        Gui gui = new Gui(vehicles,centralAtractors);
-        //sleep(5000);
-        for (int i = 0; i < 1000; i++) {
-            for (Vehicle v : vehicles)
-                v.move(vehicles);
-            //dar update ao gui. Assim da próxima vez que se atualizar a gui só mudar os VehiclesStates.
-            for (Vehicle v : vehicles)
-                v.interact(vehicles);
-            gui.updateGui(vehicles);
-            System.out.println();
-//            countVehiclesTypes();
-           // sleep(5000);
+        for (Vehicle v : vehicles) {
+            v.start();
         }
-        System.out.println(vehicles);
-    }
-
-//    public static void countVehiclesTypes(){
-//        int countInfected = 0;
-//        int countNonInfected = 0;
-//        int countRepaired = 0;
-//        int countBrokenDown = 0;
-//        for(Vehicle v:vehicles){
-//            if(v.getVehicleState()== VehicleStates.INFECTED) countInfected++;
-//            else if (v.getVehicleState()==VehicleStates.NON_INFECTED) countNonInfected++;
-//            else if (v.getVehicleState()==VehicleStates.REPAIRED) countRepaired++;
-//            else countBrokenDown++;
+//        sleep(5000);
+        //gui.setCentralAttractors(centralAtractors);
+//        for (int i = 0; i < 1000; i++) {
+//            for (Vehicle v : vehicles)
+//                v.move(vehicles);
+//            //dar update ao gui. Assim da próxima vez que se atualizar a gui só mudar os VehiclesStates.
+//            for (Vehicle v : vehicles)
+//                v.interact(vehicles);
+//            gui.updateGui(vehicles);
+//            System.out.println();
+////            countVehiclesTypes();
+//            sleep(5000);
 //        }
-//        System.out.println("#INFECTED: " + countInfected);
-//        System.out.println("#NON-INFECTED: " + countNonInfected);
-//        System.out.println("#REPAIRED: " + countRepaired);
-//        System.out.println("#BROKEN DOWN: " + countBrokenDown + "\n");
-//    }
+//        System.out.println(vehicles);
+    }
 
     public static Point getNewAttractor(Point currentAttractor) {
         Point newAttractor = centralAtractors.get(rand.nextInt(centralAtractors.size()));
@@ -59,6 +51,14 @@ public class Main {
             newAttractor = centralAtractors.get(rand.nextInt(centralAtractors.size()));
         }
         return newAttractor;
+    }
+
+    public static List<Vehicle> getAllVehicles() {
+        return vehicles;
+    }
+
+    public static List<Point> getCentralAtractors() {
+        return centralAtractors;
     }
 
     private static void initializeEnvironment() {

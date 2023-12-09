@@ -4,7 +4,9 @@ import Enums.VehicleStates;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.Thread.sleep;
 
@@ -14,11 +16,13 @@ public class Gui extends JFrame {
     private final JLabel label = new JLabel();
     private final JPanel gridPanel = new JPanel(new GridLayout(Variables.N_ROWS.getValue(), Variables.N_COLS.getValue()));
     private final JButton[][] gridButtons = new JButton[Variables.N_COLS.getValue()][Variables.N_ROWS.getValue()];
+
+//    private Map<Point,Integer> vehiclesPositions = new HashMap<>();
     private static String statesChanges = "";
 
     private List<Point> centralAttractors;
 
-    private boolean stop = true;
+//    private boolean stop = true;
 
     public Gui(List<Vehicle> vehicles) {
         setThings();
@@ -28,10 +32,12 @@ public class Gui extends JFrame {
     public Gui(List<Vehicle> vehicles, List<Point> centralAttractors) {
         setThings();
         this.centralAttractors = centralAttractors;
-        updateGui(vehicles);
+        for (Vehicle v : vehicles)
+            updateGui(v);
     }
 
-    public void updateGui(List<Vehicle> vehicles) {
+    public void updateGui(Vehicle vehicle, Point oldPosition) {
+        gridButtons[oldPosition.y][oldPosition.x].setIcon(null);
         setAllWhite();
         for (Vehicle v : vehicles) {
             Point p = v.getPosition();
@@ -45,14 +51,7 @@ public class Gui extends JFrame {
         countVehiclesTypes(vehicles);
         setCentralAttractors(centralAttractors);
         repaint();
-        while (stop) {
-            try {
-                sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        stop = true;
+        statesChanges = "";
     }
 
     public String getImage(Vehicle v) {
@@ -115,7 +114,7 @@ public class Gui extends JFrame {
                     previousInfo[previousInfo.length - 1].replace("</html>", "") +
                     "<br>" + statesChanges +
                     "<br>To:" + newInfo);
-        statesChanges = "";
+//        statesChanges = "";
     }
 
     private void countVehiclesTypes(List<Vehicle> vehicles) {
@@ -149,7 +148,7 @@ public class Gui extends JFrame {
         for (int i = 0; i < Variables.N_ROWS.getValue(); i++) {
             for (int j = 0; j < Variables.N_COLS.getValue(); j++) {
                 gridButtons[i][j].setIcon(null);
-                gridButtons[i][j].setBackground(Color.WHITE);
+                //gridButtons[i][j].setBackground(Color.WHITE);
             }
         }
     }
@@ -183,12 +182,12 @@ public class Gui extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
-        label.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                //System.out.println("Clicked");
-                stop = false;
-            }
-        });
+//        label.addMouseListener(new java.awt.event.MouseAdapter() {
+//            public void mouseClicked(java.awt.event.MouseEvent evt) {
+//                //System.out.println("Clicked");
+//                stop = false;
+//            }
+//        });
     }
 
 //    public static void main(String[] args) {
