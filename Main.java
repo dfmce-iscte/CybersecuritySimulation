@@ -19,22 +19,15 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         lock = new ReentrantLock();
-        initializeEnvironment();
-        gui = new Gui(vehicles);
-//        initializeEnvironmentCentralAttractors();
-//        gui = new Gui(vehicles, centralAtractors);
+        //initializeEnvironment();
+        // gui = new Gui(vehicles);
+        initializeEnvironmentCentralAttractors();
+        gui = new Gui(vehicles, centralAttractors);
         for (Vehicle v : vehicles) {
             v.start();
         }
     }
 
-    public static Point getNewAttractor(Point currentAttractor) {
-        Point newAttractor = centralAttractors.get(rand.nextInt(centralAttractors.size()));
-        while (newAttractor.equals(currentAttractor)) {
-            newAttractor = centralAttractors.get(rand.nextInt(centralAttractors.size()));
-        }
-        return newAttractor;
-    }
 
     public static List<Vehicle> getAllVehicles() {
         return vehicles;
@@ -91,14 +84,14 @@ public class Main {
             if (vehiclesWithAttractors) {
                 Point randomAttractor = centralAttractors.get(rand.nextInt(centralAttractors.size()));
                 if (random < Probabilities.START_INFECTED.getProb())
-                    vehicles.add(new Vehicle(VehicleStates.INFECTED, newPosition, randomAttractor));
+                    vehicles.add(new Vehicle(VehicleStates.INFECTED, newPosition, randomAttractor, vehicles, centralAttractors, lock));
                 else
-                    vehicles.add(new Vehicle(VehicleStates.NON_INFECTED, newPosition, randomAttractor));
+                    vehicles.add(new Vehicle(VehicleStates.NON_INFECTED, newPosition, randomAttractor, vehicles, centralAttractors, lock));
             } else {
                 if (random < Probabilities.START_INFECTED.getProb())
-                    vehicles.add(new Vehicle(VehicleStates.INFECTED, newPosition));
+                    vehicles.add(new Vehicle(VehicleStates.INFECTED, newPosition, vehicles, centralAttractors, lock));
                 else
-                    vehicles.add(new Vehicle(VehicleStates.NON_INFECTED, newPosition));
+                    vehicles.add(new Vehicle(VehicleStates.NON_INFECTED, newPosition, vehicles, centralAttractors, lock));
             }
         }
     }

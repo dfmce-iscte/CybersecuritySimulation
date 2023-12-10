@@ -5,6 +5,8 @@ import Enums.VehicleStates;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.locks.Lock;
 
 
 public class Vehicle extends Thread {
@@ -13,16 +15,28 @@ public class Vehicle extends Thread {
     private Point position;
     private Direction directionTaken;
 
-    public Vehicle(VehicleStates vehicleState, Point position) {
+
+    private final Lock lock;
+    private final List<Point> centralAttractors;
+
+    private final List<Vehicle> vehicles;
+
+    public Vehicle(VehicleStates vehicleState, Point position, List<Vehicle> vehicles, List<Point> centralAttractors, Lock lock) {
         this.vehicleState = vehicleState;
         this.position = position;
         this.attractorToVisit = null;
+        this.vehicles = vehicles;
+        this.centralAttractors = centralAttractors;
+        this.lock = lock;
     }
 
-    public Vehicle(VehicleStates vehicleState, Point position, Point attractorToVisit) {
+    public Vehicle(VehicleStates vehicleState, Point position, Point attractorToVisit, List<Vehicle> vehicles, List<Point> centralAttractors, Lock lock) {
         this.vehicleState = vehicleState;
         this.position = position;
         this.attractorToVisit = attractorToVisit;
+        this.vehicles = vehicles;
+        this.centralAttractors = centralAttractors;
+        this.lock = lock;
     }
 
     public Point getPosition() {
@@ -33,7 +47,6 @@ public class Vehicle extends Thread {
     @Override
     public void run() {
         while (true) {
-            List<Vehicle> vehicles = Main.getAllVehicles();
             Point oldPosition = this.position;
             move(vehicles);
             interact(vehicles);
@@ -54,16 +67,16 @@ public class Vehicle extends Thread {
                     position.y + random_dir.getY_direction()));
 
             if (newPosition.equals(attractorToVisit)) {
-               System.out.println("Arrived to Atractor: " + attractorToVisit);
-                attractorToVisit = Main.getNewAttractor(attractorToVisit);
+                System.out.println("Arrived to Atractor: " + attractorToVisit);
+                attractorToVisit = getNewAttractor(attractorToVisit);
                 return;
             }
-            Main.lock.lock();
+            lock.lock();
             if (isNewPositionClear(vehicles, newPosition)) {
                 this.position = newPosition;
                 this.directionTaken = random_dir;
             }
-            Main.lock.unlock();
+            lock.unlock();
         }
     }
 
@@ -78,6 +91,14 @@ public class Vehicle extends Thread {
             }
         }
         updateStatusIfVehicleInfected();
+    }
+
+    public Point getNewAttractor(Point currentAttractor) {
+        Point newAttractor = centralAttractors.get(new Random().nextInt(centralAttractors.size()));
+        while (newAttractor.equals(currentAttractor)) {
+            newAttractor = centralAttractors.get(new Random().nextInt(centralAttractors.size()));
+        }
+        return newAttractor;
     }
 
     public VehicleStates getVehicleState() {
@@ -108,7 +129,7 @@ public class Vehicle extends Thread {
 
     private boolean isNewPositionClear(List<Vehicle> vehicles, Point newPosition) {
         if (attractorToVisit != null)
-            for (Point attractor : Main.getCentralAttractors()) {
+            for (Point attractor : centralAttractors) {
                 if (newPosition.equals(attractor)) return false;
             }
         for (Vehicle v : vehicles) {
